@@ -1,6 +1,3 @@
-# Environment variables
-.env
-
 # Python
 __pycache__/
 *.py[cod]
@@ -23,17 +20,11 @@ wheels/
 .installed.cfg
 *.egg
 
-# Virtual environments
+# Virtual Environment
 venv/
 env/
 ENV/
-
-# Chroma DB
-chroma_db/
-
-data/
-run_therapy_only.py
-
+.venv
 
 # IDE
 .vscode/
@@ -42,9 +33,20 @@ run_therapy_only.py
 *.swo
 *~
 
+# Environment variables
+.env.local
+.env.*.local
+
+# Chroma DB
+chroma_db.sqlite3
+chroma_db/
+*.bin
+*.pickle
+
+# Logs
+*.log
+logs/
+
 # OS
 .DS_Store
 Thumbs.db
-
-
-serviceAccountKey.json

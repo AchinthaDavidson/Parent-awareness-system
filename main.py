@@ -1,33 +1,31 @@
 """
 FastAPI main entry point for Parent Dashboard backend.
+Standalone service for AI-powered parent dashboard with RAG-based Q&A.
 """
 import os
 import sys
 from pathlib import Path
 
 # Ensure the backend directory is in Python path for imports
-# This makes the backend work regardless of where it's run from
 BACKEND_DIR = Path(__file__).parent.absolute()
 if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
 
-# ---- LOAD .env EARLY (before importing anything that reads env vars) ----
+# ---- LOAD .env EARLY ----
 try:
     from dotenv import load_dotenv
     load_dotenv(dotenv_path=BACKEND_DIR / ".env", override=False)
 except Exception as e:
-    # Don't crash if dotenv isn't installed, but warn clearly.
     print(f"[WARN] Could not load .env: {e}")
 
-# Optional: quick sanity check (remove after confirming it works)
+# Optional: quick sanity check
 if not os.getenv("GROQ_API_KEY"):
     print("[WARN] GROQ_API_KEY is not set. Check your .env location and format.")
 
 from fastapi import FastAPI
 from fastapi.responses import Response
 from fastapi.middleware.cors import CORSMiddleware
-from parentdashboard.api.routes import router as parent_router
-from therapygeneration.api.routes import router as therapy_router
+from api.routes import router as dashboard_router
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -46,8 +44,7 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(parent_router)
-app.include_router(therapy_router)
+app.include_router(dashboard_router)
 
 
 @app.get("/")
@@ -69,4 +66,3 @@ async def favicon():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
