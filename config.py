@@ -28,7 +28,7 @@ PDFS_DIR = BASE_DIR / "data" / "pdfs"
 CHROMA_DB_DIR = BASE_DIR / "chroma_db"
 
 # API Configuration
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+GROQ_API_KEY = os.getenv("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")
 if not GROQ_API_KEY:
     env_file_path = ENV_FILE.absolute()
     raise ValueError(
