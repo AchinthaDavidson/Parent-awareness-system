@@ -24,3 +24,22 @@ DATABASE_CONNECTION.md
 start_server.bat
 test_*.py
 .qoder/
+.env
+.env.local
+.env.*
+! .env.example
+serviceAccountKey.json
+*.json
+!requirements.txt
+!.dockerignore
+Dockerfile
+*.md
+.pytest_cache/
+.mypy_cache/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+data/pdfs/
