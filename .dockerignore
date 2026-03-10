@@ -28,8 +28,6 @@ test_*.py
 .env.local
 .env.*
 ! .env.example
-serviceAccountKey.json
-*.json
 !requirements.txt
 !.dockerignore
 Dockerfile
