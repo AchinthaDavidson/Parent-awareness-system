@@ -109,7 +109,7 @@ if not GROQ_API_KEY:
 
 GROQ_MODEL = "llama-3.3-70b-versatile"
 GROQ_TEMPERATURE = 0.7
-GROQ_MAX_TOKENS = 1500
+GROQ_MAX_TOKENS = 1024
 
 # -----------------------------
 # RAG Configuration

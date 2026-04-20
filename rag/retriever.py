@@ -25,19 +25,20 @@ class Retriever:
     def retrieve(self, query: str, top_k: int = TOP_K_RETRIEVAL) -> List[Dict]:
         """
         Retrieve relevant chunks for a query.
-        
-        Args:
-            query: User's question
-            top_k: Number of chunks to retrieve
-        
-        Returns:
-            List of dictionaries with 'text', 'source', 'page', and 'score'
         """
+        import time as _t
+
         # Generate query embedding
+        print("    >>> generate_embedding START", flush=True)
+        _s = _t.time()
         query_embedding = self.embedding_generator.generate_embedding(query)
-        
+        print(f"    <<< generate_embedding DONE: {_t.time()-_s:.2f}s", flush=True)
+
         # Query vector store
+        print("    >>> vector_store.query START", flush=True)
+        _s = _t.time()
         results = self.vector_store.query(query_embedding, n_results=top_k)
+        print(f"    <<< vector_store.query DONE: {_t.time()-_s:.2f}s", flush=True)
         
         # Format results
         retrieved_chunks = []

@@ -52,12 +52,16 @@ class GroqLLM:
         })
         
         try:
+            import time as _t
+            _s = _t.time()
+            print(f"    >>> Groq API call START (model={self.model}, max_tokens={max_tokens or self.max_tokens})", flush=True)
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=messages,
                 temperature=temperature or self.temperature,
                 max_tokens=max_tokens or self.max_tokens
             )
+            print(f"    <<< Groq API call DONE: {_t.time()-_s:.2f}s", flush=True)
             
             return response.choices[0].message.content.strip()
         

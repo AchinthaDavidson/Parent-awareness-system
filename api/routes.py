@@ -50,16 +50,11 @@ _speech_stats_service = SpeechStatsService(repository=_speech_repository)
 async def ask_question(request: QuestionRequest):
     """
     Ask a question to the AI assistant.
-    
-    Args:
-        request: QuestionRequest containing the parent's question
-    
-    Returns:
-        AnswerResponse with the AI-generated answer
+    Uses async path to run RAG retrieval and child-summary fetch in parallel.
     """
     try:
         child_id = (request.child_id or LOGGED_IN_USER_UID).strip() or LOGGED_IN_USER_UID
-        result = qa_service.answer_question(
+        result = await qa_service.answer_question_async(
             request.question,
             child_id=child_id,
         )

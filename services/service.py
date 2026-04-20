@@ -569,6 +569,8 @@ def get_child_performance_data(
         client = get_firestore_client()
         sessions_ref = (
             client.collection("users").document(child_user_id).collection("sessions")
+            .order_by("created_at", direction=firestore.Query.DESCENDING)
+            .limit(10)
         )
         session_iter = sessions_ref.stream()
 
@@ -805,6 +807,8 @@ def get_dashboard_stats(child_user_id: str) -> Dict[str, Any]:
 
     sessions_ref = (
         client.collection("users").document(child_user_id).collection("sessions")
+        .order_by("created_at", direction=firestore.Query.DESCENDING)
+        .limit(15)
     )
     session_docs = list(sessions_ref.stream())
     total_sessions = len(session_docs)
@@ -886,18 +890,45 @@ def get_dashboard_stats(child_user_id: str) -> Dict[str, Any]:
     }
 
 
+# Module-level singletons for get_child_summary (avoid creating new instances per call)
+_summary_repo = None
+_summary_stats_service = None
+
+
+def _get_summary_stats_service() -> "SpeechStatsService":
+    global _summary_repo, _summary_stats_service
+    if _summary_stats_service is None:
+        _summary_repo = FirestoreSpeechRepository()
+        _summary_stats_service = SpeechStatsService(repository=_summary_repo)
+    return _summary_stats_service
+
+
 def get_child_summary(child_id: str) -> str:
     """Build a concise child summary string for personalization.
 
     child_id is the child's Firebase UID (users/{child_id}/sessions/...).
     """
-    repository = FirestoreSpeechRepository()
-    stats_service = SpeechStatsService(repository=repository)
+    import time as _t
+    _total_start = _t.time()
+    print(f"    >>> get_child_summary START (child_id={child_id})", flush=True)
 
+    stats_service = _get_summary_stats_service()
+
+    print("        >>> get_stats START", flush=True)
+    _s = _t.time()
     stats = stats_service.get_stats(child_id=child_id)
-    monthly_count = stats_service.get_monthly_session_count(child_id=child_id)
+    print(f"        <<< get_stats DONE: {_t.time()-_s:.2f}s", flush=True)
 
+    print("        >>> get_monthly_session_count START", flush=True)
+    _s = _t.time()
+    monthly_count = stats_service.get_monthly_session_count(child_id=child_id)
+    print(f"        <<< get_monthly_session_count DONE: {_t.time()-_s:.2f}s", flush=True)
+
+    print("        >>> get_dashboard_stats_cached START", flush=True)
+    _s = _t.time()
     dashboard = get_dashboard_stats_cached(child_user_id=child_id)
+    print(f"        <<< get_dashboard_stats_cached DONE: {_t.time()-_s:.2f}s", flush=True)
+
     word_categories = dashboard.get("word_category_progress", [])
 
     recent_sessions_summary_lines = []
@@ -920,5 +951,7 @@ def get_child_summary(child_id: str) -> str:
         f"{recent_sessions_summary}"
     )
 
+    _logger_dummy = None  # removed logger usage
+    print(f"    <<< get_child_summary TOTAL: {_t.time()-_total_start:.2f}s", flush=True)
     return summary
 
