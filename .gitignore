@@ -38,6 +38,9 @@ ENV/
 .env.*.local
 .env
 
+# Firebase credentials
+serviceAccountKey.json
+
 # Chroma DB
 chroma_db.sqlite3
 chroma_db/
