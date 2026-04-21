@@ -569,8 +569,6 @@ def get_child_performance_data(
         client = get_firestore_client()
         sessions_ref = (
             client.collection("users").document(child_user_id).collection("sessions")
-            .order_by("created_at", direction=firestore.Query.DESCENDING)
-            .limit(10)
         )
         session_iter = sessions_ref.stream()
 
@@ -807,8 +805,6 @@ def get_dashboard_stats(child_user_id: str) -> Dict[str, Any]:
 
     sessions_ref = (
         client.collection("users").document(child_user_id).collection("sessions")
-        .order_by("created_at", direction=firestore.Query.DESCENDING)
-        .limit(15)
     )
     session_docs = list(sessions_ref.stream())
     total_sessions = len(session_docs)

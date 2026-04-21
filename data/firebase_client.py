@@ -19,7 +19,7 @@ _firestore_client: Optional[firestore.Client] = None
 def get_firestore_client() -> firestore.Client:
     """Return a singleton Firestore client.
 
-    On GCP (Cloud Run), uses Application Default Credentials automatically.
+    On GCP (Cloud Run), uses Application Default Credentials with explicit project.
     Locally, falls back to serviceAccountKey.json.
     """
     global _firestore_client
@@ -36,8 +36,10 @@ def get_firestore_client() -> firestore.Client:
             cred = credentials.Certificate(str(service_account_path))
             firebase_admin.initialize_app(cred)
         else:
-            # On Cloud Run: use Application Default Credentials
-            firebase_admin.initialize_app()
+            # On Cloud Run: use ADC but point to the correct Firebase project
+            firebase_admin.initialize_app(options={
+                'projectId': 'huruwa-4b852'
+            })
 
     _firestore_client = firestore.client()
     return _firestore_client
